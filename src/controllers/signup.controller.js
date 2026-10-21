@@ -11,7 +11,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 
 export const signup = async (req, res) => {
   try {
-    const { email: inputEmail, password, username } = req.body;
+    const { email: inputEmail, password, username, fullName, phoneNumber } = req.body;
 
     if (!inputEmail || !password || !username) {
         return res.status(400).json({ message: "All fields are required" });
@@ -43,9 +43,11 @@ export const signup = async (req, res) => {
     const newUser = new User({
         email,
         username,
+        fullName: fullName || '',
+        phoneNumber: phoneNumber || '',
         password: hashed,
         role: 'user', // Default
-        verificationStatus: 'not_submitted',
+        verificationStatus: 'verified', // Regular members are automatically verified
         otp,
         otpExpires: Date.now() + 10 * 60 * 1000 // 10 minutes
     });

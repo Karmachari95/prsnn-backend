@@ -69,11 +69,14 @@ export const verifyEmailOtp = async (req, res) => {
     }
 
     user.isEmailVerified = true;
+    if (user.role === 'user') {
+      user.verificationStatus = 'verified';
+    }
     user.otp = undefined;
     user.otpExpires = undefined;
     await user.save();
 
-    const isVerified = user.role === 'superadmin' || user.verificationStatus === 'verified';
+    const isVerified = user.role === 'superadmin' || user.role === 'user' || user.verificationStatus === 'verified';
 
     const { generateToken } = await import("../utils/token.js");
     const token = generateToken({ userId: user._id, role: user.role });

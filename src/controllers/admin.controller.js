@@ -228,10 +228,18 @@ export const getUserDetails = async (req, res) => {
         }
         // For 'companion' and 'user', all data is now in the User model itself
 
-        // Logic to treat 'not_submitted' with fullName as 'pending'
-        const effectiveStatus = (user.verificationStatus && user.verificationStatus !== 'not_submitted')
-            ? user.verificationStatus
-            : (user.fullName ? 'pending' : 'not_submitted');
+        // Effective status logic
+        let effectiveStatus = user.verificationStatus;
+        if (user.role === 'user') {
+            effectiveStatus = (user.isEmailVerified || user.verificationStatus === 'verified') ? 'verified' : (user.verificationStatus || 'not_submitted');
+        } else {
+            effectiveStatus = (user.verificationStatus && user.verificationStatus !== 'not_submitted')
+                ? user.verificationStatus
+                : (user.fullName ? 'pending' : 'not_submitted');
+        }
+
+        const frontDoc = user.idProofFrontUrl || detailProfile?.frontAadharPhoto || user.frontAadharPhoto;
+        const backDoc = user.idProofBackUrl || detailProfile?.backAadharPhoto || user.backAadharPhoto;
 
         return res.status(200).json({
             id: user._id,
@@ -246,14 +254,17 @@ export const getUserDetails = async (req, res) => {
             profilePhotoUrl: user.profilePhotoUrl,
             profile_photo_url: user.profilePhotoUrl, // Backwards compatibility
             fullName: user.fullName,
-            fullName: user.fullName,
             phoneNumber: user.phoneNumber,
+            idProofFrontUrl: frontDoc,
+            idProofBackUrl: backDoc,
             verifiedBy: user.verifiedBy, // Expose verifier email
             // Return user object itself as 'profile' since we consolidated schemas
             // Admin details will overwrite if they exist
             profile: {
                 ...user.toObject(),
-                ...(detailProfile ? detailProfile.toObject() : {})
+                ...(detailProfile ? detailProfile.toObject() : {}),
+                idProofFrontUrl: frontDoc,
+                idProofBackUrl: backDoc
             }
         });
     } catch (err) {
@@ -440,15 +451,23 @@ export const getAllUsers = async (req, res) => {
         
         const users = await User.find().sort({ createdAt: -1 });
         
-        const mapped = users.map(r => ({
-            id: r._id,
-            userId: r._id,
-            username: r.username,
-            email: r.email,
-            verification_status: r.verificationStatus,
-            role: r.role,
-            created_at: r.createdAt
-        }));
+        const mapped = users.map(r => {
+            const isUserRole = r.role === 'user';
+            const status = isUserRole
+                ? ((r.isEmailVerified || r.verificationStatus === 'verified') ? 'verified' : (r.verificationStatus || 'not_submitted'))
+                : r.verificationStatus;
+
+            return {
+                id: r._id,
+                userId: r._id,
+                username: r.username,
+                email: r.email,
+                verification_status: status,
+                is_verified: status === 'verified',
+                role: r.role,
+                created_at: r.createdAt
+            };
+        });
 
         res.status(200).json(mapped);
     } catch (err) {
