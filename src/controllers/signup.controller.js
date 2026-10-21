@@ -11,7 +11,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 
 export const signup = async (req, res) => {
   try {
-    const { email: inputEmail, password, username, fullName, phoneNumber } = req.body;
+    const { email: inputEmail, password, username, fullName, phoneNumber, role: inputRole } = req.body;
 
     if (!inputEmail || !password || !username) {
         return res.status(400).json({ message: "All fields are required" });
@@ -23,6 +23,7 @@ export const signup = async (req, res) => {
     }
 
     const email = inputEmail.toLowerCase();
+    const role = inputRole === 'companion' ? 'companion' : 'user';
 
     // 1. Check if user exists (username or email)
     const existingUser = await User.findOne({
@@ -46,8 +47,8 @@ export const signup = async (req, res) => {
         fullName: fullName || '',
         phoneNumber: phoneNumber || '',
         password: hashed,
-        role: 'user', // Default
-        verificationStatus: 'verified', // Regular members are automatically verified
+        role,
+        verificationStatus: role === 'companion' ? 'pending' : 'verified',
         otp,
         otpExpires: Date.now() + 10 * 60 * 1000 // 10 minutes
     });
@@ -89,9 +90,9 @@ export const signup = async (req, res) => {
                 email: newUser.email,
                 username: newUser.username,
                 role: newUser.role,
-                is_verified: false,
+                is_verified: newUser.verificationStatus === 'verified',
                 verification_status: newUser.verificationStatus,
-                wantsToBeFellow: false,
+                wantsToBeFellow: newUser.role === 'companion',
                 fullName: newUser.fullName || '',
                 profilePhoto: newUser.profilePhotoUrl
             }
