@@ -26,4 +26,4 @@ coverage/
 .early.coverage
 
 # Local-only ops scripts (DB maintenance, etc.)
-scripts/
+/scripts/

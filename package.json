@@ -15,6 +15,7 @@
     "mongoose": "^9.1.5",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
+    "pg": "^8.23.1",
     "razorpay": "^2.9.6",
     "resend": "^6.9.3",
     "socket.io": "^4.8.3",

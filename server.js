@@ -16,7 +16,10 @@ const PORT = process.env.PORT || 5002;
  * warn, so a missing payment or email key degrades one feature instead of
  * taking the whole API down.
  */
-const REQUIRED_ENV = ['JWT_SECRET', 'MONGO_DB_URI', 'FRONTEND_URL'];
+const REQUIRED_ENV = ['JWT_SECRET', 'FRONTEND_URL'];
+if (!process.env.MONGO_DB_URI && !process.env.DATABASE_URL && !process.env.PG_DATABASE) {
+  REQUIRED_ENV.push('DATABASE_URL');
+}
 const FEATURE_ENV = [
   'RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET',
   'RESEND_API_KEY', 'EMAIL_FROM',
@@ -35,18 +38,34 @@ if (missingFeature.length) {
                `Payments, email or uploads will fail until these are set.`);
 }
 
-// Connect to MongoDB and then start server
-connectMongo().then(() => {
+import { initPostgres } from "./src/config/postgres.js";
+
+// Initialize databases and start server
+async function startServer() {
+  try {
+    await initPostgres();
+  } catch (pgErr) {
+    console.warn("PostgreSQL init warning:", pgErr.message);
+  }
+
+  if (process.env.MONGO_DB_URI) {
+    try {
+      await connectMongo();
+    } catch (mongoErr) {
+      console.warn("MongoDB init warning:", mongoErr.message);
+    }
+  }
+
   const server = http.createServer(app);
-  
-  // Initialize Socket.io
   initializeSocket(server);
 
   server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });
-}).catch((err) => {
-  console.error("Failed to connect to MongoDB:", err);
+}
+
+startServer().catch((err) => {
+  console.error("Failed to start server:", err);
   process.exit(1);
 });
