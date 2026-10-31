@@ -83,6 +83,10 @@ export const createBooking = async (req, res) => {
             return res.status(404).json({ message: "Account not found." });
         }
 
+        if (requester.verificationStatus !== 'verified' && requester.role !== 'admin' && requester.role !== 'superadmin') {
+            return res.status(403).json({ message: "Identity verification required before creating a booking. Please complete verification." });
+        }
+
         // 2. Women's Safety & Gender Matching Validation
         let effectiveGenderPref = genderPreference;
         if (requester.gender === 'woman') {
@@ -541,6 +545,10 @@ export const getBookingMessages = async (req, res) => {
 
         if (requesterIdStr !== userId.toString() && companionIdStr !== userId.toString()) {
             return res.status(403).json({ message: "Not authorized to read messages for this booking." });
+        }
+
+        if (requesterIdStr === userId.toString() && booking.paymentStatus !== 'paid') {
+            return res.status(403).json({ message: "Payment is required to view messages for this booking." });
         }
 
         const query = { bookingId: id };

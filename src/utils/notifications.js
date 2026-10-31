@@ -76,7 +76,8 @@ export const notifyUser = async ({ userId, eventKey, bookingId, customMessage })
     });
 
     // 2. Fetch user to send email
-    const recipient = await User.findById(userId).select('email fullName displayName');
+    const query = User.findById(userId);
+    const recipient = typeof query?.select === 'function' ? await query.select('email fullName displayName') : await query;
     if (recipient && recipient.email) {
       await sendEmail({
         to: recipient.email,

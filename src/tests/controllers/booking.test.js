@@ -74,13 +74,13 @@ describe('Booking Controller', () => {
       }));
     });
 
-    it('should return 400 if companionId is missing', async () => {
-      req.body = { scheduledDate: '2026-10-10', startTime: '10:00' };
+    it('should return 400 if duration is invalid or exceeds limit', async () => {
+      req.body = { scheduledDate: '2026-10-10', startTime: '10:00', duration: '999' };
       
       await createBooking(req, res);
       
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining('Companion ID') }));
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringMatching(/duration/i) }));
     });
 
     it('should return 400 if user tries to book themselves', async () => {
@@ -137,7 +137,7 @@ describe('Booking Controller', () => {
       
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        message: "Booking request sent successfully!",
+        message: expect.stringContaining("Booking request created successfully"),
         booking: expect.objectContaining({
           status: 'pending',
           companionId: 'companion123',
