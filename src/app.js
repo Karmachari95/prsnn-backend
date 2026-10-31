@@ -25,9 +25,17 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Production: specific origin with environment variable fallback
+const defaultLocalOrigins = ['http://localhost:3002', 'http://localhost:3000', 'http://127.0.0.1:3002', 'http://127.0.0.1:3000'];
 const allowedOrigins = process.env.FRONTEND_URL 
   ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
-  : [];
+  : [...defaultLocalOrigins];
+
+// Always permit local dev origins
+defaultLocalOrigins.forEach((orig) => {
+  if (!allowedOrigins.includes(orig)) {
+    allowedOrigins.push(orig);
+  }
+});
 allowedOrigins.filter(origin => typeof origin === 'string' || origin instanceof RegExp);
 
 app.use(cors({

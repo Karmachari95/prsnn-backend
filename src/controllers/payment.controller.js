@@ -4,13 +4,10 @@ import crypto from 'crypto';
 import Booking from '../models/Booking.js';
 import User from '../models/User.js';
 import Notification from '../models/Notification.js';
+import { notifyUser, notifyAdmins } from '../utils/notifications.js';
 
 /**
  * Razorpay client, built on first use.
- *
- * Constructing at module scope meant a missing RAZORPAY_KEY_ID threw during
- * import, which failed app.js and stopped the entire API from booting. Building
- * it lazily confines a misconfiguration to the payment routes.
  */
 let razorpayClient = null;
 const getRazorpay = () => {
@@ -29,8 +26,13 @@ const getRazorpay = () => {
 
 /** Amount owed for a booking, in paise. Single source of truth. */
 const amountDueInPaise = (booking) => {
+    if (booking.totalAmount) {
+        return Math.round(booking.totalAmount * 100);
+    }
     const hours = (parseInt(booking.duration, 10) || 60) / 60;
-    return Math.round(booking.pricePerHour * hours * 100);
+    const base = Math.round(booking.pricePerHour * hours * 100);
+    const fee = (booking.platformFee || 50) * 100;
+    return base + fee;
 };
 
 export const createPaymentIntent = async (req, res) => {
@@ -49,15 +51,15 @@ export const createPaymentIntent = async (req, res) => {
             return res.status(403).json({ message: "Unauthorized to pay for this booking." });
         }
 
-        if (booking.status !== 'accepted') {
-            return res.status(400).json({ message: "Booking must be accepted before payment." });
+        if (booking.status === 'cancelled' || booking.status === 'rejected') {
+            return res.status(400).json({ message: "Cannot pay for a cancelled or rejected booking." });
         }
 
         if (booking.paymentStatus === 'paid') {
             return res.status(400).json({ message: "Booking is already paid." });
         }
 
-        // Calculate amount (duration stored as minutes string)
+        // Calculate amount (including transparent platform fee)
         const amountInPaise = amountDueInPaise(booking);
 
         // IDEMPOTENCY: If an order was already created for this booking, reuse it
@@ -184,16 +186,46 @@ export const verifyPayment = async (req, res) => {
         booking.razorpayPaymentId = razorpayPaymentId;
         booking.razorpaySignature = razorpaySignature;
         booking.amountPaid = payment.amount / 100;
+
+        // Transition booking to prepaid awaiting companion if not yet accepted
+        if (booking.status === 'pending') {
+            booking.status = 'paid_awaiting_companion';
+        }
+        if (booking.companionId) {
+            booking.currentOfferCompanionId = booking.companionId;
+            booking.offerExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
+        }
         await booking.save();
 
         const refId = booking._id.toString().slice(-6).toUpperCase();
-        await Notification.create({
-            userId: booking.companionId,
-            type: 'payment_completed',
-            message: `Payment received for booking #${refId}.`
+
+        // 1. Notify Customer
+        await notifyUser({
+            userId: booking.requesterId,
+            eventKey: 'PAYMENT_RECEIVED',
+            bookingId: booking._id
         });
 
-        res.status(200).json({ message: "Payment verified successfully.", booking });
+        // 2. Notify Companion (New offer)
+        if (booking.companionId) {
+            await notifyUser({
+                userId: booking.companionId,
+                eventKey: 'NEW_OFFER',
+                bookingId: booking._id
+            });
+        }
+
+        // 3. Notify Admin
+        await notifyAdmins({
+            eventKey: 'Payment Received',
+            summary: `Payment of ₹${booking.amountPaid} received for booking #${refId}. We are finding / assigning an eligible companion.`,
+            bookingId: booking._id
+        });
+
+        res.status(200).json({ 
+            message: "Your payment has been received. We're finding an eligible companion for your booking. Your session will be confirmed when a companion accepts.", 
+            booking 
+        });
 
     } catch (error) {
         console.error("Verify Payment Error:", error);

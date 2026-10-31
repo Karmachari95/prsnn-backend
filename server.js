@@ -6,7 +6,7 @@ import connectMongo from "./src/config/mongo.js";
 import http from 'http';
 import initializeSocket from "./src/socket/index.js";
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5002;
 
 /**
  * Fail fast on misconfiguration.

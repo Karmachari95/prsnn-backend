@@ -37,35 +37,48 @@ export const getAllCompanions = async (req, res) => {
         const limit = parseInt(req.query.limit) || 100; // Default to 100, but allow override
         const skip = (page - 1) * limit;
 
-        // Check cache first — scoped to this exact page/limit combination
-        const cacheKey = `${page}:${limit}`;
+        const cityFilter = req.query.city ? req.query.city.trim() : null;
+        const genderFilter = req.query.gender ? req.query.gender.trim() : null;
+
+        // Check cache first — scoped to page, limit, city and gender
+        const cacheKey = `${page}:${limit}:${cityFilter || 'all'}:${genderFilter || 'all'}`;
         const now = Date.now();
         const cached = companionsCache.get(cacheKey);
         if (cached && (now - cached.timestamp) < CACHE_DURATION) {
             return res.status(200).json(cached.data);
         }
 
-        // Optimized query with lean() for faster results
-        const companions = await User.find({ 
+        const query = { 
             role: 'companion', 
             verificationStatus: 'verified' 
-        })
-        .select('username email profilePhotoUrl fullName description pricePerHour city area tags availability startTime endTime')
+        };
+
+        if (cityFilter) {
+            query.city = { $regex: new RegExp(`^${cityFilter}$`, 'i') };
+        }
+        if (genderFilter) {
+            query.gender = genderFilter;
+        }
+
+        // Optimized query with lean() and indexed compound fields
+        const companions = await User.find(query)
+        .select('username displayName fullName profilePhotoUrl description pricePerHour city area tags availability startTime endTime gender')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .lean(); // Convert to plain JavaScript objects for better performance
+        .lean();
         
         // Map to frontend structure
         const mapped = companions.map(f => ({
             id: f._id,
             userId: f._id,
             username: f.username,
-            email: f.email,
+            displayName: f.displayName || f.fullName || f.username,
+            fullName: f.fullName || f.displayName || f.username,
             profilePhoto: f.profilePhotoUrl,
-            fullName: f.fullName,
             description: f.description,
             pricePerHour: f.pricePerHour,
+            gender: f.gender || 'prefer_not_to_say',
             city: f.city,
             area: f.area,
             tags: f.tags || [],

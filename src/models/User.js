@@ -36,11 +36,42 @@ const UserSchema = new mongoose.Schema({
     },
     
     // Basic Profile Information (All Users)
+    displayName: {
+        type: String
+    },
     fullName: {
         type: String
     },
     phoneNumber: {
         type: String
+    },
+    gender: {
+        type: String,
+        enum: ['woman', 'man', 'non_binary', 'prefer_not_to_say', 'other'],
+        default: 'prefer_not_to_say'
+    },
+    genderPreference: {
+        type: String,
+        enum: ['women_only', 'any_gender'],
+        default: 'women_only'
+    },
+    genderConsentAcknowledged: {
+        type: Boolean,
+        default: false
+    },
+    genderConsentTimestamp: {
+        type: Date
+    },
+    agreementAccepted: {
+        type: Boolean,
+        default: false
+    },
+    agreementVersion: {
+        type: String,
+        default: '1.0'
+    },
+    agreementTimestamp: {
+        type: Date
     },
     city: {
         type: String
@@ -100,6 +131,7 @@ const UserSchema = new mongoose.Schema({
 
 // Add indexes for better query performance
 UserSchema.index({ role: 1, verificationStatus: 1, createdAt: -1 }); // For fetching verified companions efficiently with sort
+UserSchema.index({ role: 1, verificationStatus: 1, gender: 1, city: 1 }); // Fast filtered companion search
 UserSchema.index({ city: 1 }); // For city-based filtering
 UserSchema.index({ tags: 1 }); // For tag-based filtering
 UserSchema.index({ email: 1 }, { unique: true }); // Unique index for email

@@ -9,9 +9,13 @@ const MAX_MESSAGE_LENGTH = 1000;
 
 
 const initializeSocket = (server) => {
+  const defaultOrigins = ["http://localhost:3002", "http://localhost:3000", "http://127.0.0.1:3002"];
   const allowedOrigins = process.env.FRONTEND_URL 
     ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
-    : ["http://localhost:3000"];
+    : defaultOrigins;
+  defaultOrigins.forEach((orig) => {
+    if (!allowedOrigins.includes(orig)) allowedOrigins.push(orig);
+  });
 
   const io = new Server(server, {
     cors: {

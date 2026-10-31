@@ -89,11 +89,16 @@ export const login = async (req, res) => {
             id: user._id,
             email: user.email,
             username: user.username,
+            displayName: user.displayName || user.fullName || user.username,
+            fullName: user.fullName || '',
+            gender: user.gender || 'prefer_not_to_say',
+            genderPreference: user.genderPreference || 'women_only',
+            genderConsentAcknowledged: Boolean(user.genderConsentAcknowledged),
+            agreementAccepted: Boolean(user.agreementAccepted),
             role: user.role,
             is_verified: isVerified,
             verification_status: user.verificationStatus,
             wantsToBeFellow: user.role === 'companion',
-            fullName: user.fullName || '',
             profilePhoto: user.profilePhotoUrl
         }
     });

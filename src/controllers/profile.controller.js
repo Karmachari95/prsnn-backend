@@ -336,8 +336,19 @@ export const updateProfile = async (req, res) => {
         
         if (updates.username) user.username = updates.username;
         if (updates.email) user.email = updates.email.toLowerCase();
+        if (updates.displayName) user.displayName = updates.displayName;
         if (updates.fullName) user.fullName = updates.fullName;
         if (updates.phoneNumber) user.phoneNumber = updates.phoneNumber;
+        if (updates.gender) user.gender = updates.gender;
+        if (updates.genderPreference) user.genderPreference = updates.genderPreference;
+        if (updates.genderConsentAcknowledged !== undefined) {
+            user.genderConsentAcknowledged = Boolean(updates.genderConsentAcknowledged);
+            user.genderConsentTimestamp = new Date();
+        }
+        if (updates.agreementAccepted !== undefined) {
+            user.agreementAccepted = Boolean(updates.agreementAccepted);
+            user.agreementTimestamp = new Date();
+        }
         if (updates.city) user.city = updates.city;
         if (updates.area) user.area = updates.area;
         if (updates.description) user.description = updates.description;
