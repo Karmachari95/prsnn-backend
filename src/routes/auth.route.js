@@ -1,6 +1,7 @@
 import express from "express";
 import { signup } from "../controllers/signup.controller.js";
 import { login } from "../controllers/login.controller.js";
+import { googleAuth } from "../controllers/googleAuth.controller.js";
 
 import { upload } from "../middleware/upload.middleware.js";
 
@@ -10,6 +11,7 @@ const router = express.Router();
 
 router.post("/register", upload.single("verificationImage"), signup);
 router.post("/login", login);
+router.post("/google", googleAuth);
 
 // Verification Routes
 router.post("/verify-email", verifyEmailOtp);
