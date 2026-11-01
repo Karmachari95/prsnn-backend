@@ -96,6 +96,9 @@ const UserSchema = new mongoose.Schema({
     backupPhotoUrl: {
         type: String
     },
+    additionalPhotoUrl: {
+        type: String
+    },
     
     // OTP fields
     otp: {

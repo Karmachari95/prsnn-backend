@@ -34,6 +34,7 @@ router.post('/admin-onboard', authMiddleware, upload.fields([
 router.put('/update', authMiddleware, upload.fields([
     { name: 'profilePhoto', maxCount: 1 },
     { name: 'backupPhoto', maxCount: 1 },
+    { name: 'additionalPhoto', maxCount: 1 },
     { name: 'photo', maxCount: 1 }
 ]), updateProfile);
 

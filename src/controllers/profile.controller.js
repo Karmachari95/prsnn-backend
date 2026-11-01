@@ -377,10 +377,19 @@ export const updateProfile = async (req, res) => {
         }
         
         // Handle photos
-        const profilePhoto = req.files?.profilePhoto?.[0]?.path; // Companion
+        const profilePhoto = req.files?.profilePhoto?.[0]?.path; // Companion / User
         const adminPhoto = req.files?.photo?.[0]?.path; // Admin
+        const backupPhoto = req.files?.backupPhoto?.[0]?.path; // Secondary photo
+        const additionalPhoto = req.files?.additionalPhoto?.[0]?.path; // Third photo
+
         if (profilePhoto || adminPhoto) {
             user.profilePhotoUrl = profilePhoto || adminPhoto;
+        }
+        if (backupPhoto) {
+            user.backupPhotoUrl = backupPhoto;
+        }
+        if (additionalPhoto) {
+            user.additionalPhotoUrl = additionalPhoto;
         }
 
         // Availability Updates
