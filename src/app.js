@@ -77,6 +77,10 @@ const limiter = rateLimit({
   message: "Too many requests from this IP, please try again after 15 minutes"
 });
 
+// Health checks (excluded from rate limiter)
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
+app.get('/api/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
+
 // Apply rate limiting to all requests (or could be specific to /api)
 app.use("/api/", limiter);
 
