@@ -4,7 +4,7 @@ import Admin from "../models/Admin.js";
 import Booking from "../models/Booking.js";
 import DeletedAccount from "../models/DeletedAccount.js";
 import { hashPassword } from "../utils/hash.js";
-import { invalidateCompanionsCache, FEMALE_COMPANIONS } from "./fellows.controller.js";
+import { invalidateCompanionsCache } from "./fellows.controller.js";
 
 // Create Admin (Super Admin only)
 export const createAdmin = async (req, res) => {
@@ -226,41 +226,6 @@ export const getUserDetails = async (req, res) => {
         }
         
         if (!user) {
-            // Check in curated female companions / verified companions
-            const companion = (FEMALE_COMPANIONS || []).find(f => f.id === id || f.userId === id || f.username === id);
-            if (companion) {
-                return res.status(200).json({
-                    id: companion.id,
-                    userId: companion.id,
-                    username: companion.username,
-                    email: `${companion.username}@prsnn.com`,
-                    role: 'companion',
-                    verification_status: 'verified',
-                    is_verified: true,
-                    created_at: new Date().toISOString(),
-                    wantsToBeFellow: true,
-                    profilePhotoUrl: companion.profilePhoto || companion.profilePhotoUrl,
-                    profile_photo_url: companion.profilePhoto || companion.profilePhotoUrl,
-                    fullName: companion.fullName,
-                    phoneNumber: '+91 98765 43210',
-                    idProofFrontUrl: companion.profilePhoto || companion.profilePhotoUrl,
-                    idProofBackUrl: companion.profilePhoto || companion.profilePhotoUrl,
-                    verifiedBy: 'system@prsnn.com',
-                    profile: {
-                        fullName: companion.fullName,
-                        phoneNumber: '+91 98765 43210',
-                        description: companion.description,
-                        pricePerHour: companion.pricePerHour,
-                        startTime: companion.start_time || '09:00',
-                        endTime: companion.end_time || '20:00',
-                        city: companion.city,
-                        area: companion.area,
-                        createdAt: new Date().toISOString(),
-                        idProofFrontUrl: companion.profilePhoto || companion.profilePhotoUrl,
-                        idProofBackUrl: companion.profilePhoto || companion.profilePhotoUrl
-                    }
-                });
-            }
             return res.status(404).json({ message: "User not found" });
         }
 
@@ -519,31 +484,7 @@ export const getAllUsers = async (req, res) => {
             };
         });
 
-        // Also append curated companions if not already present
-        const existingUsernames = new Set(mapped.map(u => u.username));
-        const companionUsers = (FEMALE_COMPANIONS || [])
-            .filter(c => !existingUsernames.has(c.username))
-            .map(c => ({
-                id: c.id,
-                userId: c.id,
-                username: c.username,
-                email: `${c.username}@prsnn.com`,
-                fullName: c.fullName,
-                phoneNumber: '+91 98765 43210',
-                profilePhotoUrl: c.profilePhoto || c.profilePhotoUrl,
-                idProofFrontUrl: c.profilePhoto || c.profilePhotoUrl,
-                idProofBackUrl: c.profilePhoto || c.profilePhotoUrl,
-                verificationStatus: 'verified',
-                verification_status: 'verified',
-                is_verified: true,
-                role: 'companion',
-                created_at: new Date().toISOString(),
-                createdAt: new Date().toISOString()
-            }));
-
-        const combined = [...mapped, ...companionUsers];
-
-        res.status(200).json(combined);
+        res.status(200).json(mapped);
     } catch (err) {
         console.error("Get All Users Error:", err);
         res.status(500).json({ error: err.message });
