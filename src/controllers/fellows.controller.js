@@ -27,6 +27,105 @@ export const invalidateCompanionsCache = () => {
     companionsCache.clear();
 };
 
+// Verified female companions to guarantee safety & gender balance
+export const FEMALE_COMPANIONS = [
+  {
+    id: "6ab7001a1111111111111001",
+    userId: "6ab7001a1111111111111001",
+    _id: "6ab7001a1111111111111001",
+    username: "priya_blr",
+    displayName: "Priya Sharma",
+    fullName: "Priya Sharma",
+    city: "Bangalore",
+    area: "Indiranagar, Koramangala",
+    pricePerHour: 499,
+    gender: "woman",
+    profilePhoto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80",
+    profilePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80",
+    tags: ["Sit With Me", "Don't Go Alone", "Explore Together", "Cafe Hopping", "Study Buddy", "Silence", "Quiet", "Reading", "Walking"],
+    description: "Gentle presence for study sessions, quiet café reading, or someone calm to accompany you to social gatherings.",
+    availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
+    monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
+    start_time: "09:00", end_time: "20:00"
+  },
+  {
+    id: "6ab7001a1111111111111002",
+    userId: "6ab7001a1111111111111002",
+    _id: "6ab7001a1111111111111002",
+    username: "ananya_bom",
+    displayName: "Ananya Sen",
+    fullName: "Ananya Sen",
+    city: "Mumbai",
+    area: "Bandra, Juhu, Khar",
+    pricePerHour: 549,
+    gender: "woman",
+    profilePhoto: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop&q=80",
+    profilePhotoUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop&q=80",
+    tags: ["Don't Go Alone", "Explore Together", "Event Companion", "Cafe Hopping", "Plus One", "Foodie", "Walking"],
+    description: "Friendly companion for art gallery visits, weekend brunches, exploring indie bookshops or quiet public walks.",
+    availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
+    monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
+    start_time: "10:00", end_time: "21:00"
+  },
+  {
+    id: "6ab7001a1111111111111003",
+    userId: "6ab7001a1111111111111003",
+    _id: "6ab7001a1111111111111003",
+    username: "meera_che",
+    displayName: "Meera Iyer",
+    fullName: "Meera Iyer",
+    city: "Chennai",
+    area: "Besant Nagar, Adyar",
+    pricePerHour: 449,
+    gender: "woman",
+    profilePhoto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80",
+    profilePhotoUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80",
+    tags: ["Sit With Me", "Be Around", "Silence", "Study Buddy", "Reading", "Quiet", "Work Companion"],
+    description: "Calm, non-intrusive focus partner. Ideal for coworking in libraries, reading by the beach promenade, or quiet presence.",
+    availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
+    monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
+    start_time: "08:00", end_time: "19:00"
+  },
+  {
+    id: "6ab7001a1111111111111004",
+    userId: "6ab7001a1111111111111004",
+    _id: "6ab7001a1111111111111004",
+    username: "riya_del",
+    displayName: "Riya Kapoor",
+    fullName: "Riya Kapoor",
+    city: "Delhi",
+    area: "Hauz Khas, Connaught Place",
+    pricePerHour: 599,
+    gender: "woman",
+    profilePhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
+    profilePhotoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
+    tags: ["Explore Together", "Don't Go Alone", "Shopping", "Sightseeing", "Foodie", "Walking"],
+    description: "Warm, respectful companion for heritage walks in old city gardens, flea markets, exhibitions or museum days.",
+    availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
+    monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
+    start_time: "09:30", end_time: "20:30"
+  },
+  {
+    id: "6ab7001a1111111111111005",
+    userId: "6ab7001a1111111111111005",
+    _id: "6ab7001a1111111111111005",
+    username: "ayesha_hyd",
+    displayName: "Ayesha Khan",
+    fullName: "Ayesha Khan",
+    city: "Hyderabad",
+    area: "Jubilee Hills, Banjara Hills",
+    pricePerHour: 499,
+    gender: "woman",
+    profilePhoto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",
+    profilePhotoUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",
+    tags: ["Sit With Me", "Don't Go Alone", "Cafe Hopping", "Silence", "Sitting", "Plus One"],
+    description: "Friendly, grounded companion who makes quiet spaces feel comfortable and social gatherings much less intimidating.",
+    availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
+    monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
+    start_time: "10:00", end_time: "21:00"
+  }
+];
+
 /**
  * Fetch all verified companions with pagination and caching
  */
@@ -96,105 +195,6 @@ export const getAllCompanions = async (req, res) => {
             end_time: f.endTime
         }));
 
-        // Verified female companions to guarantee safety & gender balance
-        const FEMALE_COMPANIONS = [
-          {
-            id: "6ab7001a1111111111111001",
-            userId: "6ab7001a1111111111111001",
-            _id: "6ab7001a1111111111111001",
-            username: "priya_blr",
-            displayName: "Priya Sharma",
-            fullName: "Priya Sharma",
-            city: "Bangalore",
-            area: "Indiranagar, Koramangala",
-            pricePerHour: 499,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80",
-            profilePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80",
-            tags: ["Sit With Me", "Don't Go Alone", "Explore Together", "Cafe Hopping", "Study Buddy", "Silence", "Quiet", "Reading", "Walking"],
-            description: "Gentle presence for study sessions, quiet café reading, or someone calm to accompany you to social gatherings.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "09:00", end_time: "20:00"
-          },
-          {
-            id: "6ab7001a1111111111111002",
-            userId: "6ab7001a1111111111111002",
-            _id: "6ab7001a1111111111111002",
-            username: "ananya_bom",
-            displayName: "Ananya Sen",
-            fullName: "Ananya Sen",
-            city: "Mumbai",
-            area: "Bandra, Juhu, Khar",
-            pricePerHour: 549,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop&q=80",
-            profilePhotoUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop&q=80",
-            tags: ["Don't Go Alone", "Explore Together", "Event Companion", "Cafe Hopping", "Plus One", "Foodie", "Walking"],
-            description: "Friendly companion for art gallery visits, weekend brunches, exploring indie bookshops or quiet public walks.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "10:00", end_time: "21:00"
-          },
-          {
-            id: "6ab7001a1111111111111003",
-            userId: "6ab7001a1111111111111003",
-            _id: "6ab7001a1111111111111003",
-            username: "meera_che",
-            displayName: "Meera Iyer",
-            fullName: "Meera Iyer",
-            city: "Chennai",
-            area: "Besant Nagar, Adyar",
-            pricePerHour: 449,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80",
-            profilePhotoUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80",
-            tags: ["Sit With Me", "Be Around", "Silence", "Study Buddy", "Reading", "Quiet", "Work Companion"],
-            description: "Calm, non-intrusive focus partner. Ideal for coworking in libraries, reading by the beach promenade, or quiet presence.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "08:00", end_time: "19:00"
-          },
-          {
-            id: "6ab7001a1111111111111004",
-            userId: "6ab7001a1111111111111004",
-            _id: "6ab7001a1111111111111004",
-            username: "riya_del",
-            displayName: "Riya Kapoor",
-            fullName: "Riya Kapoor",
-            city: "Delhi",
-            area: "Hauz Khas, Connaught Place",
-            pricePerHour: 599,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
-            profilePhotoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
-            tags: ["Explore Together", "Don't Go Alone", "Shopping", "Sightseeing", "Foodie", "Walking"],
-            description: "Warm, respectful companion for heritage walks in old city gardens, flea markets, exhibitions or museum days.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "09:30", end_time: "20:30"
-          },
-          {
-            id: "6ab7001a1111111111111005",
-            userId: "6ab7001a1111111111111005",
-            _id: "6ab7001a1111111111111005",
-            username: "ayesha_hyd",
-            displayName: "Ayesha Khan",
-            fullName: "Ayesha Khan",
-            city: "Hyderabad",
-            area: "Jubilee Hills, Banjara Hills",
-            pricePerHour: 499,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",
-            profilePhotoUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",
-            tags: ["Sit With Me", "Don't Go Alone", "Cafe Hopping", "Silence", "Sitting", "Plus One"],
-            description: "Friendly, grounded companion who makes quiet spaces feel comfortable and social gatherings much less intimidating.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "10:00", end_time: "21:00"
-          }
-        ];
-
         // Combine MongoDB verified companions with curated female companions
         const combined = [...FEMALE_COMPANIONS, ...mappedMongo];
         
@@ -226,9 +226,12 @@ export const getCompanionById = async (req, res) => {
     try {
         const { id } = req.params;
         
-        const user = await User.findById(id)
-            .select('username email profilePhotoUrl fullName description pricePerHour city area tags availability startTime endTime verificationStatus role gender')
-            .lean();
+        let user = null;
+        if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
+            user = await User.findById(id)
+                .select('username email profilePhotoUrl fullName description pricePerHour city area tags availability startTime endTime verificationStatus role gender')
+                .lean();
+        }
 
         if (user && user.role === 'companion' && user.verificationStatus === 'verified') {
             return res.status(200).json({
@@ -250,96 +253,7 @@ export const getCompanionById = async (req, res) => {
             });
         }
 
-        // Fallback for curated companions
-        const FALLBACKS = [
-          {
-            id: "6ab7001a1111111111111001",
-            userId: "6ab7001a1111111111111001",
-            username: "priya_blr",
-            fullName: "Priya Sharma",
-            displayName: "Priya Sharma",
-            city: "Bangalore",
-            area: "Indiranagar, Koramangala",
-            pricePerHour: 499,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80",
-            tags: ["Sit With Me", "Don't Go Alone", "Explore Together", "Cafe Hopping", "Study Buddy", "Silence", "Quiet", "Reading", "Walking"],
-            description: "Gentle presence for study sessions, quiet café reading, or someone calm to accompany you to social gatherings.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "09:00", end_time: "20:00"
-          },
-          {
-            id: "6ab7001a1111111111111002",
-            userId: "6ab7001a1111111111111002",
-            username: "ananya_bom",
-            fullName: "Ananya Sen",
-            displayName: "Ananya Sen",
-            city: "Mumbai",
-            area: "Bandra, Juhu, Khar",
-            pricePerHour: 549,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop&q=80",
-            tags: ["Don't Go Alone", "Explore Together", "Event Companion", "Cafe Hopping", "Plus One", "Foodie", "Walking"],
-            description: "Friendly companion for art gallery visits, weekend brunches, exploring indie bookshops or quiet public walks.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "10:00", end_time: "21:00"
-          },
-          {
-            id: "6ab7001a1111111111111003",
-            userId: "6ab7001a1111111111111003",
-            username: "meera_che",
-            fullName: "Meera Iyer",
-            displayName: "Meera Iyer",
-            city: "Chennai",
-            area: "Besant Nagar, Adyar",
-            pricePerHour: 449,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80",
-            tags: ["Sit With Me", "Be Around", "Silence", "Study Buddy", "Reading", "Quiet", "Work Companion"],
-            description: "Calm, non-intrusive focus partner. Ideal for coworking in libraries, reading by the beach promenade, or quiet presence.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "08:00", end_time: "19:00"
-          },
-          {
-            id: "6ab7001a1111111111111004",
-            userId: "6ab7001a1111111111111004",
-            username: "riya_del",
-            fullName: "Riya Kapoor",
-            displayName: "Riya Kapoor",
-            city: "Delhi",
-            area: "Hauz Khas, Connaught Place",
-            pricePerHour: 599,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
-            tags: ["Explore Together", "Don't Go Alone", "Shopping", "Sightseeing", "Foodie", "Walking"],
-            description: "Warm, respectful companion for heritage walks in old city gardens, flea markets, exhibitions or museum days.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "09:30", end_time: "20:30"
-          },
-          {
-            id: "6ab7001a1111111111111005",
-            userId: "6ab7001a1111111111111005",
-            username: "ayesha_hyd",
-            fullName: "Ayesha Khan",
-            displayName: "Ayesha Khan",
-            city: "Hyderabad",
-            area: "Jubilee Hills, Banjara Hills",
-            pricePerHour: 499,
-            gender: "woman",
-            profilePhoto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",
-            tags: ["Sit With Me", "Don't Go Alone", "Cafe Hopping", "Silence", "Sitting", "Plus One"],
-            description: "Friendly, grounded companion who makes quiet spaces feel comfortable and social gatherings much less intimidating.",
-            availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true },
-            monday_availability: true, tuesday_availability: true, wednesday_availability: true, thursday_availability: true, friday_availability: true, saturday_availability: true, sunday_availability: true,
-            start_time: "10:00", end_time: "21:00"
-          }
-        ];
-
-        const match = FALLBACKS.find(f => f.id === id || f.userId === id);
+        const match = FEMALE_COMPANIONS.find(f => f.id === id || f.userId === id || f.username === id);
         if (match) {
             return res.status(200).json(match);
         }

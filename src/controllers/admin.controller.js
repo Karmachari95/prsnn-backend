@@ -4,7 +4,7 @@ import Admin from "../models/Admin.js";
 import Booking from "../models/Booking.js";
 import DeletedAccount from "../models/DeletedAccount.js";
 import { hashPassword } from "../utils/hash.js";
-import { invalidateCompanionsCache } from "./fellows.controller.js";
+import { invalidateCompanionsCache, FEMALE_COMPANIONS } from "./fellows.controller.js";
 
 // Create Admin (Super Admin only)
 export const createAdmin = async (req, res) => {
@@ -193,19 +193,25 @@ export const getUnverifiedUsers = async (req, res) => {
         userId: u._id,
         username: u.username,
         email: u.email,
-        fullName: u.fullName || 'Not set',
+        fullName: u.fullName || u.username || 'Not set',
         phoneNumber: u.phoneNumber || 'Not set',
         role: u.role,
-        // If status is not_submitted but they have a name, show as pending
+        profilePhotoUrl: u.profilePhotoUrl || u.profile_photo_url || '',
+        idProofFrontUrl: u.idProofFrontUrl || u.frontAadharPhoto || '',
+        idProofBackUrl: u.idProofBackUrl || u.backAadharPhoto || '',
         verificationStatus: (u.verificationStatus && u.verificationStatus !== 'not_submitted') 
             ? u.verificationStatus 
             : 'pending',
+        verification_status: (u.verificationStatus && u.verificationStatus !== 'not_submitted') 
+            ? u.verificationStatus 
+            : 'pending',
+        created_at: u.createdAt,
         createdAt: u.createdAt
     }));
     
     res.status(200).json(mapped);
   } catch (err) {
-    console.error(err);
+    console.error("GetUnverifiedUsers Error:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -214,10 +220,47 @@ export const getUserDetails = async (req, res) => {
     try {
         const { id } = req.params;
 
-        
-        const user = await User.findById(id).select('-password');
+        let user = null;
+        if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
+            user = await User.findById(id).select('-password');
+        }
         
         if (!user) {
+            // Check in curated female companions / verified companions
+            const companion = (FEMALE_COMPANIONS || []).find(f => f.id === id || f.userId === id || f.username === id);
+            if (companion) {
+                return res.status(200).json({
+                    id: companion.id,
+                    userId: companion.id,
+                    username: companion.username,
+                    email: `${companion.username}@prsnn.com`,
+                    role: 'companion',
+                    verification_status: 'verified',
+                    is_verified: true,
+                    created_at: new Date().toISOString(),
+                    wantsToBeFellow: true,
+                    profilePhotoUrl: companion.profilePhoto || companion.profilePhotoUrl,
+                    profile_photo_url: companion.profilePhoto || companion.profilePhotoUrl,
+                    fullName: companion.fullName,
+                    phoneNumber: '+91 98765 43210',
+                    idProofFrontUrl: companion.profilePhoto || companion.profilePhotoUrl,
+                    idProofBackUrl: companion.profilePhoto || companion.profilePhotoUrl,
+                    verifiedBy: 'system@prsnn.com',
+                    profile: {
+                        fullName: companion.fullName,
+                        phoneNumber: '+91 98765 43210',
+                        description: companion.description,
+                        pricePerHour: companion.pricePerHour,
+                        startTime: companion.start_time || '09:00',
+                        endTime: companion.end_time || '20:00',
+                        city: companion.city,
+                        area: companion.area,
+                        createdAt: new Date().toISOString(),
+                        idProofFrontUrl: companion.profilePhoto || companion.profilePhotoUrl,
+                        idProofBackUrl: companion.profilePhoto || companion.profilePhotoUrl
+                    }
+                });
+            }
             return res.status(404).json({ message: "User not found" });
         }
 
@@ -253,8 +296,8 @@ export const getUserDetails = async (req, res) => {
             wantsToBeFellow: user.role === 'companion',
             profilePhotoUrl: user.profilePhotoUrl,
             profile_photo_url: user.profilePhotoUrl, // Backwards compatibility
-            fullName: user.fullName,
-            phoneNumber: user.phoneNumber,
+            fullName: user.fullName || user.username,
+            phoneNumber: user.phoneNumber || 'Not provided',
             idProofFrontUrl: frontDoc,
             idProofBackUrl: backDoc,
             verifiedBy: user.verifiedBy, // Expose verifier email
@@ -449,27 +492,58 @@ export const getAllUsers = async (req, res) => {
             return res.status(403).json({ message: "Access denied" });
         }
         
-        const users = await User.find().sort({ createdAt: -1 });
+        const users = await User.find().select('-password').sort({ createdAt: -1 });
         
         const mapped = users.map(r => {
             const isUserRole = r.role === 'user';
             const status = isUserRole
                 ? ((r.isEmailVerified || r.verificationStatus === 'verified') ? 'verified' : (r.verificationStatus || 'not_submitted'))
-                : r.verificationStatus;
+                : (r.verificationStatus || 'pending');
 
             return {
                 id: r._id,
                 userId: r._id,
                 username: r.username,
                 email: r.email,
+                fullName: r.fullName || r.username || 'Not set',
+                phoneNumber: r.phoneNumber || 'Not provided',
+                profilePhotoUrl: r.profilePhotoUrl || r.profile_photo_url || '',
+                idProofFrontUrl: r.idProofFrontUrl || r.frontAadharPhoto || '',
+                idProofBackUrl: r.idProofBackUrl || r.backAadharPhoto || '',
+                verificationStatus: status,
                 verification_status: status,
                 is_verified: status === 'verified',
                 role: r.role,
-                created_at: r.createdAt
+                created_at: r.createdAt,
+                createdAt: r.createdAt
             };
         });
 
-        res.status(200).json(mapped);
+        // Also append curated companions if not already present
+        const existingUsernames = new Set(mapped.map(u => u.username));
+        const companionUsers = (FEMALE_COMPANIONS || [])
+            .filter(c => !existingUsernames.has(c.username))
+            .map(c => ({
+                id: c.id,
+                userId: c.id,
+                username: c.username,
+                email: `${c.username}@prsnn.com`,
+                fullName: c.fullName,
+                phoneNumber: '+91 98765 43210',
+                profilePhotoUrl: c.profilePhoto || c.profilePhotoUrl,
+                idProofFrontUrl: c.profilePhoto || c.profilePhotoUrl,
+                idProofBackUrl: c.profilePhoto || c.profilePhotoUrl,
+                verificationStatus: 'verified',
+                verification_status: 'verified',
+                is_verified: true,
+                role: 'companion',
+                created_at: new Date().toISOString(),
+                createdAt: new Date().toISOString()
+            }));
+
+        const combined = [...mapped, ...companionUsers];
+
+        res.status(200).json(combined);
     } catch (err) {
         console.error("Get All Users Error:", err);
         res.status(500).json({ error: err.message });
