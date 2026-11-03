@@ -1,6 +1,6 @@
 
 import express from "express";
-import { getUnverifiedUsers, verifyUser, createAdmin, getAllAdmins, updateAdmin, deleteAdmin, getDashboardStats, getSuperAdminAnalytics, getUserDetails, getAllUsers, deleteUser, verifyAdmin, getAllPayments } from "../controllers/admin.controller.js";
+import { getUnverifiedUsers, verifyUser, createAdmin, getAllAdmins, updateAdmin, deleteAdmin, getDashboardStats, getSuperAdminAnalytics, getUserDetails, getAllUsers, deleteUser, verifyAdmin, getAllPayments, getDeletedAccounts } from "../controllers/admin.controller.js";
 import { authMiddleware, requireRole } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
@@ -16,7 +16,7 @@ router.put("/verify/:id", staff, verifyUser);
 router.get("/user/:id", staff, getUserDetails);
 router.get("/stats", staff, getDashboardStats);
 
-// Super Admin Routes
+// Super Admin & Audit Routes
 router.post("/create-admin", superOnly, createAdmin);
 router.get("/admins", superOnly, getAllAdmins);
 router.put("/admin/:id", superOnly, updateAdmin);
@@ -26,5 +26,6 @@ router.get("/super-stats", superOnly, getSuperAdminAnalytics);
 router.get("/all-users", staff, getAllUsers);
 router.delete("/user/:id", superOnly, deleteUser);
 router.get("/payments", superOnly, getAllPayments);
+router.get("/deleted-accounts", staff, getDeletedAccounts);
 
 export default router;

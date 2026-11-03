@@ -19,19 +19,31 @@ const DeletedAccountSchema = new mongoose.Schema({
     required: true
   },
   deletedBy: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.Mixed,
     ref: 'User',
-    required: true
+    default: 'Admin'
   },
   deletionReason: {
     type: String,
     default: 'Admin action'
   },
+  fullName: {
+    type: String
+  },
+  phoneNumber: {
+    type: String
+  },
+  categoryType: {
+    type: String
+  },
+  pricePerHour: {
+    type: String
+  },
   deletedAt: {
     type: Date,
     default: Date.now
   }
-});
+}, { timestamps: true });
 
 const DeletedAccount = mongoose.model("DeletedAccount", DeletedAccountSchema);
 export default DeletedAccount;

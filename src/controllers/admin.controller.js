@@ -559,8 +559,12 @@ export const deleteUser = async (req, res) => {
             username: userToDelete.username,
             email: userToDelete.email,
             role: userToDelete.role,
-            deletedBy: req.user.id,
-            deletionReason: "Super Admin manual deletion via dashboard"
+            fullName: userToDelete.fullName || userToDelete.displayName || userToDelete.username,
+            phoneNumber: userToDelete.phoneNumber || 'Not provided',
+            categoryType: userToDelete.categoryType || userToDelete.role,
+            pricePerHour: userToDelete.hourlyRate ? String(userToDelete.hourlyRate) : 'N/A',
+            deletedBy: req.user.id || req.user._id,
+            deletionReason: req.body?.reason || "Super Admin manual deletion via dashboard"
         });
         await archivedAccount.save();
 
@@ -580,6 +584,66 @@ export const deleteUser = async (req, res) => {
     } catch (err) {
         console.error("[DeleteUser Error]:", err);
         res.status(500).json({ error: err.message });
+    }
+};
+
+export const getDeletedAccounts = async (req, res) => {
+    try {
+        if (!['admin', 'superadmin'].includes(req.user.role)) {
+            return res.status(403).json({ message: "Access denied" });
+        }
+
+        const accounts = await DeletedAccount.find()
+            .populate({
+                path: 'deletedBy',
+                select: 'username email fullName displayName',
+                strictPopulate: false
+            })
+            .sort({ deletedAt: -1, createdAt: -1 });
+
+        const formatted = accounts.map(acc => {
+            let deletedByDisplay = 'System Administrator';
+            if (acc.deletedBy) {
+                if (typeof acc.deletedBy === 'object') {
+                    deletedByDisplay = acc.deletedBy.username || acc.deletedBy.fullName || acc.deletedBy.displayName || acc.deletedBy.email || 'Admin';
+                } else {
+                    deletedByDisplay = String(acc.deletedBy);
+                }
+            }
+
+            const deletedAt = acc.deletedAt || acc.createdAt || new Date();
+            const createdAt = acc.createdAt || acc.deletedAt || new Date();
+
+            return {
+                _id: acc._id,
+                userId: acc.originalUserId || String(acc._id),
+                originalUserId: acc.originalUserId || String(acc._id),
+                username: acc.username || 'unknown',
+                email: acc.email || 'unknown',
+                role: acc.role || 'user',
+                verification_status: 'deleted',
+                is_verified: false,
+                deletionReason: acc.deletionReason || 'Account deleted by administrator',
+                deleted_by: deletedByDisplay,
+                deleted_at: deletedAt,
+                created_at: createdAt,
+                profile: {
+                    fullName: acc.fullName || acc.username || 'N/A',
+                    phoneNumber: acc.phoneNumber || 'N/A',
+                    categoryType: acc.categoryType || acc.role || 'user',
+                    pricePerHour: acc.pricePerHour || 'N/A',
+                    description: acc.deletionReason || 'Account deleted by administrator'
+                }
+            };
+        });
+
+        res.status(200).json({
+            count: formatted.length,
+            accounts: formatted
+        });
+    } catch (error) {
+        console.error("Get deleted accounts error:", error);
+        res.status(500).json({ message: "Server error fetching deleted accounts", error: error.message });
     }
 };
 
